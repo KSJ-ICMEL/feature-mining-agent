@@ -118,7 +118,7 @@ python multi-agent-figure.py
 ## Example Interaction
 
 ```
-You: 논문 추출해줘
+You: 주어진 논문에서 이온전도도에 영향을 주는 인자들을 추출해줘
 Supervisor: 추출을 시작합니다...
   [Extractor] 완료
   [Standardizer] 완료
@@ -127,7 +127,7 @@ Supervisor: 추출을 시작합니다...
   [GraphUpdater] 완료
 추출이 완료되었습니다. 총 5개의 데이터를 처리했습니다.
 
-You: 상관관계 분석해줘
+You: 구조화된 DB를 바탕으로 이온전도도와 변인 사이 상관관계를 분석해줘
 Supervisor: 분석이 완료되었습니다.
 | Feature | Correlation | P-value |
 |---------|-------------|---------|
