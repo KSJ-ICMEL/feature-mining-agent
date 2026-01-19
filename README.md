@@ -1,46 +1,49 @@
-# feature-mining-agent
+# Feature Mining Agent (FMA)
 
-An autonomous, multi-agent framework built on **LangGraph** to accelerate the discovery of next-generation solid-state electrolytes. This system automates the end-to-end research pipeline—from literature acquisition to the **elucidation** of hidden physical descriptors.
+An autonomous, multi-agent framework built on **LangGraph** to accelerate the discovery of next-generation solid-state electrolytes. This system automates the end-to-end research pipeline—from literature extraction to the **elucidation** of hidden physical descriptors.
 
 ---
 
-## Mission & Vision
+## Architecture
 
-The **feature-mining-agent** transcends traditional data extraction by focusing on the **causal logic** embedded in scientific texts. By structuring fragmented research findings into a unified **Knowledge Graph**, the agent identifies latent correlations and predictive factors that govern the **ionic conductivity** of solid-state materials.
+```mermaid
+graph TD
+    Start[__start__] --> Supervisor
+    Supervisor -->|extract| Extractor
+    Supervisor -->|analyze| Analyzer
+    Supervisor -->|respond/done| End[__end__]
+    
+    Extractor -->|continue| Extractor
+    Extractor -->|done| Standardizer
+    Standardizer --> Reporter
+    Reporter --> DBUpdater
+    DBUpdater --> GraphUpdater
+    GraphUpdater --> Supervisor
+    
+    Analyzer --> Supervisor
+```
 
-### **Key Capabilities**
-- **Autonomous Knowledge Acquisition**: Seamlessly collect and filter high-impact literature to stay at the forefront of battery research.
-- **Causal Relationship Extraction**: Extract deep mechanisms and "cause-and-effect" relationships (e.g., how specific doping affects lattice strain and conductivity).
-- **Knowledge Graph Synthesis**: Transform unstructured PDFs into a structured graph, connecting composition, structure, and property.
-- **Latent Feature Discovery**: Mine the graph to uncover hidden predictive factors—acting as a "co-scientist" in the feature engineering process.
+### Agents
+
+| Agent | Role |
+|-------|------|
+| **Supervisor** | Orchestrates workflow, interprets user requests, routes to appropriate pipeline |
+| **Extractor** | LLM-based extraction of ionic conductivity data from markdown papers |
+| **Standardizer** | Unit conversion + vector similarity search for schema mapping |
+| **Reporter** | Generates human-readable approval reports |
+| **DBUpdater** | Saves standardized data to CSV |
+| **GraphUpdater** | Updates Neo4j Knowledge Graph with material-property relationships |
+| **Analyzer** | Correlation analysis, data statistics, Neo4j pattern discovery |
 
 ---
 
 ## Tech Stack
 
-- **Orchestration**: [LangGraph](https://github.com/langchain-ai/langgraph) (for cyclic, stateful agentic workflows)
+- **Orchestration**: [LangGraph](https://github.com/langchain-ai/langgraph)
+- **LLM**: [Ollama](https://ollama.ai/) (local LLM)
 - **Framework**: [LangChain](https://github.com/langchain-ai/langchain)
-- **Storage**: Neo4j (Knowledge Graph) / Vector DB (Context Retrieval)
-- **Logic**: Python 3.10+ & Pydantic for structured scientific data parsing
-
----
-
-## Agentic Workflow
-
-```mermaid
-graph LR
-    A[Scraper Agent] -->|Raw Text| B[Extraction Agent]
-    B -->|Causal Triples| C[Graph Agent]
-    C -->|Relational Network| D[Reasoning Agent]
-    D -->|New Hypotheses| E[Insight Discovery]
-
-    subgraph "Core Loop (LangGraph)"
-    B
-    C
-    D
-    end
-
-```
+- **Knowledge Graph**: Neo4j
+- **Data Processing**: Pandas, SciPy
 
 ---
 
@@ -48,26 +51,38 @@ graph LR
 
 ```text
 feature-mining-agent/
-├── agents/             # Scraper, Extractor, Miner nodes
-├── graph/              # Neo4j schema & Cypher query handlers
-├── workflows/          # LangGraph state & edge logic
-├── data/               # Local cache (Papers, JSONL) - .gitignore applied
-├── main.py             # Execution entry point
-└── .env                # API Keys & DB Credentials
-
+├── fma/
+│   ├── agents/
+│   │   ├── extractor.py      # Paper data extraction
+│   │   ├── standardizer.py   # Unit conversion & schema mapping
+│   │   ├── reporter.py       # Approval report generation
+│   │   ├── db_updater.py     # CSV export
+│   │   ├── graph_updater.py  # Neo4j integration
+│   │   └── analyzer.py       # Data analysis
+│   ├── tools/
+│   │   ├── db_tools.py       # CSV query tools
+│   │   ├── graph_tools.py    # Neo4j query tools
+│   │   └── pipeline_tools.py # Pipeline control tools
+│   ├── config.py             # Configuration
+│   ├── state.py              # LangGraph state definitions
+│   ├── supervisor.py         # Supervisor agent
+│   └── graph.py              # Workflow assembly
+├── papers/                   # Markdown papers to process
+├── runs/                     # Output directory
+├── main.py                   # Entry point
+└── multi-agent-figure.py     # Graph visualization
 ```
 
 ---
 
 ## Getting Started
 
-### 1. Environment Setup
+### 1. Installation
 
 ```bash
-git clone [https://github.com/your-username/feature-mining-agent.git](https://github.com/your-username/feature-mining-agent.git)
+git clone https://github.com/KSJ-ICMEL/feature-mining-agent.git
 cd feature-mining-agent
 pip install -r requirements.txt
-
 ```
 
 ### 2. Configuration
@@ -75,11 +90,49 @@ pip install -r requirements.txt
 Create a `.env` file:
 
 ```env
-OPENAI_API_KEY=your_api_key
 NEO4J_URI=bolt://localhost:7687
-NEO4J_USER=neo4j
+NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your_password
+```
 
+### 3. Usage
+
+**Interactive Mode** (with Supervisor):
+```bash
+python main.py --interactive
+```
+
+**Extraction Only** (batch processing):
+```bash
+python main.py --use-fma
+python main.py --use-fma --md-dir /path/to/papers
+```
+
+**Generate Workflow Diagram**:
+```bash
+python multi-agent-figure.py
+```
+
+---
+
+## Example Interaction
+
+```
+You: 논문 추출해줘
+Supervisor: 추출을 시작합니다...
+  [Extractor] 완료
+  [Standardizer] 완료
+  [Reporter] 완료
+  [DBUpdater] 완료
+  [GraphUpdater] 완료
+추출이 완료되었습니다. 총 5개의 데이터를 처리했습니다.
+
+You: 상관관계 분석해줘
+Supervisor: 분석이 완료되었습니다.
+| Feature | Correlation | P-value |
+|---------|-------------|---------|
+| sintering_T | 0.7234 | 0.0021 |
+...
 ```
 
 ---
