@@ -24,6 +24,13 @@ class PaperAnalysisData(BaseModel):
 
 
 class FMAState(TypedDict):
+    # Supervisor state
+    messages: List[Any]
+    user_request: str
+    next_action: str  # "extract", "analyze", "respond", "done"
+    supervisor_response: str
+    
+    # Extraction pipeline state
     md_paths: List[str]
     current_md_index: int
     
@@ -36,6 +43,9 @@ class FMAState(TypedDict):
     standardized_data: Dict[str, Any]
     column_mapping_suggestions: Dict[str, str]
     new_columns_to_add: List[str]
+    
+    # Analysis state
+    analysis_result: str
     
     report_message: str
     user_approved: bool
@@ -72,6 +82,13 @@ def create_fma_initial_state(md_paths: List[str] = None, run_id: str = None) -> 
     csv_path = os.path.join(run_dir, "extracted_features.csv")
     
     return {
+        # Supervisor state
+        "messages": [],
+        "user_request": "",
+        "next_action": "",
+        "supervisor_response": "",
+        
+        # Extraction pipeline state
         "md_paths": md_paths,
         "current_md_index": 0,
         
@@ -84,6 +101,9 @@ def create_fma_initial_state(md_paths: List[str] = None, run_id: str = None) -> 
         "standardized_data": {},
         "column_mapping_suggestions": {},
         "new_columns_to_add": [],
+        
+        # Analysis state
+        "analysis_result": "",
         
         "report_message": "",
         "user_approved": False,

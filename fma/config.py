@@ -16,7 +16,7 @@ class FMAConfig:
     RUNS_DIR = os.path.join(BASE_DIR, "runs")
     os.makedirs(RUNS_DIR, exist_ok=True)
     
-    MD_DIRECTORY = os.path.join(BASE_DIR, "example", "papers", "argyrodite")
+    MD_DIRECTORY = os.path.join(BASE_DIR, "papers")
     
     VECTOR_SIMILARITY_THRESHOLD = 0.85
     

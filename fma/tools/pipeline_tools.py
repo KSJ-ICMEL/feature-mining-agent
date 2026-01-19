@@ -10,10 +10,14 @@ from fma.config import FMAConfig
 
 
 def get_md_files() -> list:
+    import glob
     md_dir = FMAConfig.MD_DIRECTORY
     if not os.path.exists(md_dir):
         return []
-    return [f for f in os.listdir(md_dir) if f.lower().endswith('.md')]
+    
+    # Recursive search for markdown files
+    search_pattern = os.path.join(md_dir, "**", "*.md")
+    return glob.glob(search_pattern, recursive=True)
 
 
 def get_processed_files() -> list:

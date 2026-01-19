@@ -15,11 +15,11 @@ import os
 
 
 def run_fma(args):
-    from fma.graph import build_fma_workflow, run_fma_pipeline
+    from fma.graph import build_extraction_only_workflow, run_fma_pipeline
     
     print("Initializing Feature Mining Agent (FMA)...")
     
-    app = build_fma_workflow()
+    app = build_extraction_only_workflow()
     print("   Workflow build complete")
     
     md_paths = None
@@ -39,8 +39,8 @@ def run_fma(args):
 
 
 def run_interactive():
-    from fma.supervisor import run_supervisor_interactive
-    run_supervisor_interactive()
+    from fma.graph import run_interactive_session
+    run_interactive_session()
 
 
 def main():
